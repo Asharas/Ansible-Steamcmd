@@ -1,2 +1,7 @@
 ---
-# tasks file for ansible_steamcmd
+
+- name: Install steamcmd
+  import_tasks: steamcmd.yml
+
+- name: Install game
+  import_tasks: game.yml

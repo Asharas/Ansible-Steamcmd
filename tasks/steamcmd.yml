@@ -1,0 +1,42 @@
+---
+- name: Add i386 architecture to dpkg
+  ansible.builtin.lineinfile:
+    line: "{{ item }}"
+    path: /var/lib/dpkg/arch
+    create: true
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - amd64
+    - i386
+
+- name: Enable contrib and non-free repos
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list
+    regexp: 'main( contrib)?$'
+    replace: 'main contrib non-free'
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Preseed steamcmd install questions
+  ansible.builtin.debconf:
+    name: steamcmd
+    question: "{{ item.question }}"
+    vtype: "{{ item.vtype }}"
+    value: "{{ item.value }}"
+  loop:
+    - { question: 'steam/question', vtype: 'select', value: 'I AGREE'}
+    - { question: 'steam/license', vtype: 'note', value: ''}
+    - { question: 'steam/purge', vtype: 'note', value: ''}
+
+- name: Install packages
+  ansible.builtin.apt:
+    state: present
+    name:
+      - libgdiplus
+      - steamcmd
+      - acl
+      - sudo

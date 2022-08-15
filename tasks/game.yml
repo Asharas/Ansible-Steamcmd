@@ -1,0 +1,23 @@
+---
+- name: Add {{ game.name }} Server user
+  ansible.builtin.user:
+    name: "{{ game.user }}"
+    state: present
+    shell: /bin/bash
+    password: '!'
+    update_password: on_create
+    password_lock: true
+
+- name: Create server directory
+  ansible.builtin.file:
+    path: "{{ game.rootdir }}"
+    state: directory
+    owner: "{{ game.user }}"
+    group: "{{ game.group }}"
+    mode: 0755
+
+- name: Install/Update {{ game.name }}
+  ansible.builtin.command: /usr/games/steamcmd +force_install_dir {{ game.rootdir }} +login anonymous +app_update {{ game.steam_appid }} default validate +quit
+  become_user: "{{ game.user }}"
+  register: game_install
+  changed_when: "'Update state (0x61) downloading' in game_install.stdout"
