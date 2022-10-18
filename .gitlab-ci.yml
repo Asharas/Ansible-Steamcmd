@@ -9,7 +9,7 @@ default:
 lint:
   stage: lint
   script:
-    - ansible-lint -c ./.ansible-lint.yml --show-relpath .
+    - ansible-lint --show-relpath .
   only:
     - main
     - merge_requests
