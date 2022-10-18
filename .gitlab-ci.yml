@@ -3,11 +3,9 @@ stages:
   - lint
   - publish
 
-default:
-  image: registry.gitlab.com/pipeline-components/ansible-lint:latest
-
 lint:
   stage: lint
+  image: registry.gitlab.com/pipeline-components/ansible-lint:latest
   script:
     - ansible-lint --show-relpath .
   only:
@@ -16,6 +14,7 @@ lint:
 
 publish:
   stage: publish
+  image: registry.gitlab.com/asharas/docker-ansible:latest
   script:
     - ansible-galaxy role import --role-name steamcmd --api-key $GALAXY_API_KEY Asharas Ansible-Steamcmd
   only:
